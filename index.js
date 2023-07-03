@@ -26,37 +26,62 @@ const connection = mysql.createConnection({
     database: 'bookManagement'
 })
 
-//Get api for the list of book
-var data
-app.get('/books', (req, res) => {
+//Post api for login
+app.post('/login', (req, res) => {
+
+    const { userName } = req.body;
+    const { password } = req.body;
 
     connection.connect()
-    connection.query('select * from books;', (err, res) => {
-        data = res
+    connection.query(`Select userID from users where userName = "${userName}" && password = "${password}"`, (error, result) => {
+        console.log(result)
+        if (result.length == 0) {
+            res.status(400).send({ result: 'Invalid Input' })
+        } else {
+const val=result[0]
+            res.status(200).send({
+                val
+            })
+
+        }
+
     })
 
-    console.log("List of avaliable books...")
-    console.log(data)
+})
 
-    res.status(200).send({
-        data
+//Get api for the list of book
+var value
+app.get('/books/:id', (req, res) => {
+
+    const fetchID = req.params.id
+    connection.connect()
+    connection.query(`SELECT books.bookID as bookID, books.bookName as bookName, data.selected as selected FROM books INNER JOIN data ON books.bookID=data.bookID where data.userID=${fetchID};`, (err, result) => {
+        value = result
+
+        console.log("List of avaliable books...")
+        console.log(value)
+
+        res.status(200).send({
+            value
+        })
+
     })
 
 });
 
+//Put api for data update
+app.put('/updateList/:id', (req, res) => {
 
-app.put('/updateList/1', (req, res) => {
-
-    // const fetchID = req.params.id
+    const fetchID = req.params.id
     const { bookID } = req.body;
 
-    console.log("BookID, that needs to be updated: "+bookID)
+    console.log("BookID, that needs to be updated: " + bookID)
 
     connection.connect()
-    connection.query(`UPDATE books SET selected = true WHERE bookID=${bookID};`, (error, result) => {
+    connection.query(`UPDATE data SET selected = true WHERE bookID=${bookID} AND userID=${fetchID}`, (error, result) => {
 
     })
-    
+
     res.status(200).send({
         message: "UPDATED"
     })
@@ -77,4 +102,7 @@ Express doesn't parse JSON in the body, by default [We need to set a middleware 
 
 To add mysql packages
 npm install mysql2
+
+To create models
+npm i mongoose
 */
