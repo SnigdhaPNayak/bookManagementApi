@@ -100,9 +100,12 @@ Call back functions are being used to handle the api requests [It sends JSON obj
 
 Express doesn't parse JSON in the body, by default [We need to set a middleware for it]
 
+To add cross origin [It allows us to, make an api request from any origin]
+npm install cors --save
+
 To add mysql packages
 npm install mysql2
 
 To create models
 npm i mongoose
-*/
+*/ 
